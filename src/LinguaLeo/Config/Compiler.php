@@ -14,7 +14,7 @@ class Compiler
             foreach ($raw as $levels) {
                 foreach ($levels as $data) {
                     list($levelValues) = $data;
-                    
+
                     if (isset($levelValues[$key])) {
                         $result[$key][$levelValues[$key]] = 1;
                     }

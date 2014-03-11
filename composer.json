@@ -2,7 +2,7 @@
     "version": "1.0.0",
     "name": "LinguaLeo/php-hi-config",
     "minimum-stability": "stable",
-    "description": "LinguaLeo hierarchical config library",
+    "description": "Library to create awesome hierarchical configs",
 
     "require": {
         "php": "5.5.*"
