@@ -1,4 +1,4 @@
-Awesome hierarchical configs by LinguaLeo
+Awesome hierarchical configs
 =============
 
 ```php
