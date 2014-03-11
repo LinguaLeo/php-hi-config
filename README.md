@@ -1,4 +1,4 @@
-Library to create awesome hierarchical configs
+Awesome hierarchical configs by LinguaLeo
 =============
 
 ```php
