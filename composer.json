@@ -1,5 +1,5 @@
 {
-    "version": "1.0.2",
+    "version": "1.0.5",
     "name": "LinguaLeo/php-hi-config",
     "minimum-stability": "stable",
     "description": "Library to create awesome hierarchical configs",
