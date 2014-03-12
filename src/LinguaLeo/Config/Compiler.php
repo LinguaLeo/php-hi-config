@@ -5,6 +5,14 @@ class Compiler
 {
     protected $schema;
     protected $schemaPriorities;
+    protected $defaultOptions = ['treeClass' => '\LinguaLeo\Config\CompiledData'];
+    protected $options = [];
+    protected $pathMap = [];
+
+    function __construct($options = [])
+    {
+        $this->options = $options + $this->defaultOptions;
+    }
 
     protected function getNodeValues($raw)
     {
@@ -26,57 +34,69 @@ class Compiler
         return $result;
     }
 
+    protected function addPathToMap($path)
+    {
+        $node = & $this->pathMap;
+        foreach ($path as $key => $value) {
+            $key = $key . "=" . $value;
+            if ($value != "*") {
+                if (!isset($node[$key])) {
+                    $node[$key] = [];
+                }
+
+                $node = & $node[$key];
+            }
+        }
+    }
+
     protected function buildNode(&$tree, $path, $nodeValues, $raw)
     {
         $translatedPath = [];
 
         foreach ($path as $key => $step) {
-            $keys = array_keys($nodeValues[$key]);
-            if (isset($keys[$step])) {
+            $step--;
+            if ($step >= 0) {
+                $keys = array_keys($nodeValues[$key]);
                 $translatedPath[$key] = $keys[$step];
             } else {
                 $translatedPath[$key] = "*";
             }
         }
 
-        $currentNode = & $tree;
-        foreach ($translatedPath as $node) {
-            if (!isset($currentNode[$node])) {
-                $currentNode[$node] = [];
-            }
-            $currentNode = & $currentNode[$node];
-        }
+        $values = $this->getConfigValues($translatedPath, $raw);
 
-        $currentNode = $this->getConfigValues($translatedPath, $raw);
+        if (count($values) > 0) {
+            $tree[implode(".", $translatedPath)] = $values;
+            $this->addPathToMap($translatedPath);
+        }
     }
 
     protected function getConfigValues($path, $raw)
     {
         $config = [];
         foreach ($raw as $valueName => $levels) {
-            $maxPriority = -1;
-            $varValue = "";
             foreach ($levels as $level) {
                 list($levelData, $configValue) = $level;
 
-                $priority = 0;
-                $shouldAdd = true;
+                $test = $path;
                 foreach ($levelData as $key => $value) {
-                    if ($path[$key] == $value) {
-                        $priority += $this->schemaPriorities[$key];
+                    if (isset($path[$key]) && $path[$key] == $value) {
+                        $test[$key] = "*";
                     } else {
-                        $shouldAdd = false;
+                        $test[$key] = null;
                     }
                 }
 
-                if ($shouldAdd && ($priority > $maxPriority)) {
-                    $maxPriority = $priority;
-                    $varValue = $configValue;
+                $shouldAdd = true;
+                foreach ($test as $value) {
+                    if ($value != "*") {
+                        $shouldAdd = false;
+                        break;
+                    }
                 }
-            }
-
-            if ($maxPriority != -1) {
-                $config[$valueName] = $varValue;
+                if ($shouldAdd) {
+                    $config[$valueName] = $configValue;
+                }
             }
         }
 
@@ -111,7 +131,7 @@ class Compiler
         return $tree;
     }
 
-    public function compile($schema, $raw)
+    protected function setSchema($schema)
     {
         $this->schema = $schema;
 
@@ -122,10 +142,21 @@ class Compiler
             $multiplier *= 2;
             $index++;
         }
+    }
 
+
+    /**
+     * @param $schema
+     * @param $raw
+     * @return CompiledData
+     */
+    public function compile($schema, $raw)
+    {
+        $this->pathMap = [];
+        $this->setSchema($schema);
         $nodeValues = $this->getNodeValues($raw);
         $mergeTree = $this->getMergeTree($raw, $nodeValues);
 
-        return ["tree" => $mergeTree, "schema" => $this->schema];
+        return new $this->options['treeClass']($this->schema, $mergeTree, $this->pathMap);
     }
 }

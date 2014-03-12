@@ -3,52 +3,65 @@ namespace LinguaLeo\Config;
 
 class Registry
 {
-    protected $tree;
+    protected $data;
     protected $schema;
+    protected $pathMap;
+    protected $mergeKeyTemplate;
 
+    /**
+     * @param CompiledData $compiledData
+     */
     public function __construct($compiledData)
     {
-        $this->tree = $compiledData['tree'];
-        $this->schema = $compiledData['schema'];
+        $this->data = $compiledData->getData();
+        $this->schema = $compiledData->getSchema();
+        $this->pathMap = $compiledData->getPathMap();
+
+        foreach ($this->schema as $_) {
+            $this->mergeKeyTemplate[] = "*";
+        }
     }
 
     public function getConfig($namespace)
     {
-        $i = 0;
-        $result = [];
-        while ($i < pow(2, count($this->schema))) {
-            $path = $this->getPath($i, $namespace);
-
-            $node = & $this->tree;
-            foreach ($path as $step) {
-                $node = & $node[$step];
+        $mergeKey = $this->mergeKeyTemplate;
+        $mergeResult = $this->data[join(".", $mergeKey)];
+        $priority = 1;
+        $priorityTree = [];
+        foreach ($namespace as $index => $value) {
+            $key = $this->schema[$index] . '=' . $value;
+            if (isset($this->pathMap[$key])) {
+                $branchMergeKey = $mergeKey;
+                $branchMergeKey[$index] = $value;
+                $this->attachBranchToPriorityTree($priorityTree, $this->pathMap[$key], $namespace, $index, $branchMergeKey, $priority, $priority);
             }
-
-            if (is_array($node)) {
-                $result = $node + $result;
-            }
-
-            $i++;
+            $priority *= 2;
         }
 
-        return $result;
+        ksort($priorityTree);
+        foreach ($priorityTree as $data) {
+            $mergeResult = $data + $mergeResult;
+        }
+
+        return $mergeResult;
     }
 
-    protected function getPath($pathIndex, $namespace)
+    public function attachBranchToPriorityTree(&$result, &$node, $namespace, $index, &$mergeKey, $priority, $pow)
     {
-        $i = 1;
-        $index = 0;
-        $path = [];
-        foreach ($this->schema as $key) {
-            if (($pathIndex & $i) >> $index == 1) {
-                $path[$key] = $namespace[$key];
-            } else {
-                $path[$key] = "*";
+        $joinedKey = join(".", $mergeKey);
+        while (++$index < count($namespace)) {
+            $value = $namespace[$index];
+            $key = $this->schema[$index] . '=' . $value;
+            $pow *= 2;
+            if (isset($node[$key])) {
+                $mergeKey[$index] = $value;
+                $this->attachBranchToPriorityTree($result, $node[$key], $namespace, $index, $mergeKey, $priority + $pow, $pow);
+                $mergeKey[$index] = "*";
             }
-            $i *= 2;
-            $index++;
         }
 
-        return $path;
+        if (isset($this->data[$joinedKey])) {
+            $result[$priority] = $this->data[$joinedKey];
+        }
     }
 }

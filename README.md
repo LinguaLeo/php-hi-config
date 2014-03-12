@@ -28,11 +28,12 @@ $configData = [
 ];
 
 $compiler = new Compiler();
-
 $compiled = $compiler->compile(["env", "lang", "user"], $configData);
 $registry = new Registry($compiled);
 
-$config = $registry->getConfig(["env" => "dev", "lang" => "ru", "user" => "10000"]);
+$config = $registry->getConfig(["dev", "ru", "10000"]);
+var_dump($config["api_host"]);
 
+$config = $registry->getConfig(["prod", "ru", "1024"]);
 var_dump($config["api_host"]);
 ```
