@@ -11,6 +11,7 @@ class Compiler
         $result = [];
 
         foreach ($this->schema as $key) {
+            $result[$key] = [];
             foreach ($raw as $levels) {
                 foreach ($levels as $data) {
                     list($levelValues) = $data;
@@ -86,7 +87,7 @@ class Compiler
     {
         $tree = [];
         $pointers = [];
-        foreach ($nodeValues as $key => $values) {
+        foreach ($this->schema as $key) {
             $pointers[$key] = 0;
         }
 

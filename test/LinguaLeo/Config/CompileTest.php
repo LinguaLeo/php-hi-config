@@ -30,8 +30,8 @@ class CompileTest extends \PHPUnit_Framework_TestCase
         ];
 
         $compiler = new Compiler();
-
         $compiled = $compiler->compile(["env", "lang", "user"], $configData);
+
         $registry = new Registry($compiled);
 
         $config = $registry->getConfig(["env" => "dev", "lang" => "ru", "user" => "10000"]);
@@ -63,5 +63,23 @@ class CompileTest extends \PHPUnit_Framework_TestCase
 
         $config = $registry->getConfig(["env" => "stage", "lang" => "uk", "user" => "2048"]);
         $this->assertArrayNotHasKey("currency", $config);
+    }
+
+    public function testEmpty()
+    {
+        $schema = ["env"];
+        $data = [
+            "key" => [
+                [[], "value"]
+            ],
+        ];
+
+        $compiler = new Compiler();
+        $compiled = $compiler->compile($schema, $data);
+
+        $registry = new Registry($compiled);
+        $config = $registry->getConfig(["env" => "dev"]);
+
+        $this->assertEquals("value", $config["key"]);
     }
 } 
