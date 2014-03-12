@@ -27,7 +27,7 @@ class Registry
             if (is_array($node)) {
                 $result = $node + $result;
             }
-            
+
             $i++;
         }
 
