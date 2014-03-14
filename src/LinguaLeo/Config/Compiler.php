@@ -4,9 +4,11 @@ namespace LinguaLeo\Config;
 class Compiler
 {
     protected $schema;
-    protected $pathMap = [];
-    protected $defaultOptions = ['compiledDataClass' => '\LinguaLeo\Config\CompiledData'];
+
     protected $options = [];
+    protected $defaultOptions = [
+        Enum::OPTION_COMPILED_DATA_CLASS => '\LinguaLeo\Config\Data'
+    ];
 
     public function __construct($options = [])
     {
@@ -16,23 +18,32 @@ class Compiler
     /**
      * @param $schema
      * @param $rawData
-     * @return CompiledData
+     * @param $prefix
+     * @return Data
      */
-    public function compile($schema, $rawData)
+    public function compile($schema, $rawData, $prefix = '')
     {
-        $this->pathMap = [];
-        $this->schema = $schema;
+        $this->setSchema($schema);
         $schemaKeysValues = $this->getSchemaKeysValues($rawData);
-        $mergeTree = $this->getMergeTree($rawData, $schemaKeysValues);
+        $mergeData = $this->getMergeData($rawData, $schemaKeysValues, $prefix);
 
         return call_user_func(
-            [$this->options['compiledDataClass'], 'fromArray'],
+            [$this->options[Enum::OPTION_COMPILED_DATA_CLASS], 'fromArray'],
             [
-                'schema' => $this->schema,
-                'mergeTree' => $mergeTree,
-                'pathMap' => $this->pathMap
+                Enum::KEY_SCHEMA => $this->schema,
+                Enum::KEY_MERGE_TREE => $mergeData[Enum::KEY_MERGE_TREE],
+                Enum::KEY_PATH_MAP => $mergeData[Enum::KEY_PATH_MAP]
             ]
         );
+    }
+
+    protected function setSchema($schema)
+    {
+        if (!is_array($schema)) {
+            throw new Exception("Schema must be an array");
+        }
+
+        $this->schema = $schema;
     }
 
     protected function getSchemaKeysValues($rawData)
@@ -42,7 +53,14 @@ class Compiler
             $result[$schemaKey] = [];
             foreach ($rawData as $levels) {
                 foreach ($levels as $levelData) {
+                    if (count($levelData) != 2) {
+                        throw new Exception("Wrong config data format");
+                    }
+
                     list($levelValues) = $levelData;
+                    if (!is_array($levelValues)) {
+                        throw new Exception("Wrong config data format");
+                    }
 
                     if (isset($levelValues[$schemaKey])) {
                         $result[$schemaKey][$levelValues[$schemaKey]] = 1;
@@ -54,9 +72,10 @@ class Compiler
         return $result;
     }
 
-    protected function getMergeTree($rawData, $schemaKeysValues)
+    protected function getMergeData($rawData, $schemaKeysValues, $prefix)
     {
-        $tree = [];
+        $mergeTree = [];
+        $pathMap = [];
         $pointers = [];
         foreach ($this->schema as $key) {
             $pointers[$key] = 0;
@@ -65,7 +84,7 @@ class Compiler
         $lastIndex = count($this->schema) - 1;
         $lastKey = $this->schema[$lastIndex];
         while ($pointers[$lastKey] <= count($schemaKeysValues[$lastKey])) {
-            $this->buildNode($tree, $pointers, $schemaKeysValues, $rawData);
+            $this->buildNode($mergeTree, $pathMap, $pointers, $schemaKeysValues, $rawData, $prefix);
 
             $pointers[$this->schema[0]]++;
             $currentPointer = 0;
@@ -82,10 +101,10 @@ class Compiler
             }
         }
 
-        return $tree;
+        return [Enum::KEY_MERGE_TREE => $mergeTree, Enum::KEY_PATH_MAP => $pathMap];
     }
 
-    protected function buildNode(&$tree, $path, $schemaKeysValues, $rawData)
+    protected function buildNode(&$tree, &$pathMap, $path, $schemaKeysValues, $rawData, $prefix)
     {
         $translatedPath = [];
 
@@ -95,19 +114,19 @@ class Compiler
                 $keys = array_keys($schemaKeysValues[$key]);
                 $translatedPath[$key] = $keys[$step];
             } else {
-                $translatedPath[$key] = "*";
+                $translatedPath[$key] = Enum::BLANK;
             }
         }
 
-        $values = $this->getConfigValues($translatedPath, $rawData);
+        $values = $this->getConfigValues($translatedPath, $rawData, $prefix);
 
         if (count($values) > 0) {
             $tree[implode(".", $translatedPath)] = $values;
-            $this->addPathToMap($translatedPath);
+            $this->addPathToMap($pathMap, $translatedPath);
         }
     }
 
-    protected function getConfigValues($translatedPath, $rawData)
+    protected function getConfigValues($translatedPath, $rawData, $prefix)
     {
         $result = [];
         foreach ($rawData as $valueName => $levels) {
@@ -117,7 +136,7 @@ class Compiler
                 $testPattern = $translatedPath;
                 foreach ($levelData as $key => $value) {
                     if (isset($translatedPath[$key]) && $translatedPath[$key] == $value) {
-                        $testPattern[$key] = "*";
+                        $testPattern[$key] = Enum::BLANK;
                     } else {
                         $testPattern[$key] = null;
                     }
@@ -125,14 +144,14 @@ class Compiler
 
                 $shouldAdd = true;
                 foreach ($testPattern as $value) {
-                    if ($value != "*") {
+                    if ($value != Enum::BLANK) {
                         $shouldAdd = false;
                         break;
                     }
                 }
 
                 if ($shouldAdd) {
-                    $result[$valueName] = $configValue;
+                    $result[$prefix . $valueName] = $configValue;
                 }
             }
         }
@@ -140,12 +159,12 @@ class Compiler
         return $result;
     }
 
-    protected function addPathToMap($translatedPath)
+    protected function addPathToMap(&$pathMap, $translatedPath)
     {
-        $pathNode = & $this->pathMap;
+        $pathNode = & $pathMap;
         foreach ($translatedPath as $pathKey => $value) {
             $pathKey = $pathKey . "=" . $value;
-            if ($value != "*") {
+            if ($value != Enum::BLANK) {
                 if (!isset($pathNode[$pathKey])) {
                     $pathNode[$pathKey] = [];
                 }
