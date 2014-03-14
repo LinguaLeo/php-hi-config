@@ -4,20 +4,20 @@ namespace LinguaLeo\Config;
 class CompiledData
 {
     protected $schema;
-    protected $data;
+    protected $mergeTree;
     protected $pathMap;
 
-    public function __construct($schema, $data, $pathMap)
+    public function __construct($schema, $mergeTree, $pathMap)
     {
         $this->schema = $schema;
-        $this->data = $data;
+        $this->mergeTree = $mergeTree;
         $this->pathMap = $pathMap;
     }
 
-    public function getRaw()
+    public function getAsArray()
     {
         return [
-            'data' => $this->data,
+            'mergeTree' => $this->mergeTree,
             'schema' => $this->schema,
             'pathMap' => $this->pathMap
         ];
@@ -26,9 +26,9 @@ class CompiledData
     /**
      * @return mixed
      */
-    public function getData()
+    public function getMergeTree()
     {
-        return $this->data;
+        return $this->mergeTree;
     }
 
     /**
@@ -45,5 +45,10 @@ class CompiledData
     public function getSchema()
     {
         return $this->schema;
+    }
+
+    static public function fromArray($array)
+    {
+        return new self($array['schema'], $array['mergeTree'], $array['pathMap']);
     }
 }

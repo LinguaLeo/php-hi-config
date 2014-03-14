@@ -3,37 +3,56 @@ namespace LinguaLeo\Config;
 
 class Registry
 {
-    protected $data;
+    protected $mergeTree;
     protected $schema;
     protected $pathMap;
+
     protected $mergeKeyTemplate;
+    protected $isMergeKeyTemplateCreated = false;
 
     /**
      * @param CompiledData $compiledData
      */
     public function __construct($compiledData)
     {
-        $this->data = $compiledData->getData();
+        $this->mergeTree = $compiledData->getMergeTree();
         $this->schema = $compiledData->getSchema();
         $this->pathMap = $compiledData->getPathMap();
+    }
 
+    protected function createMergeKeyTemplate()
+    {
         foreach ($this->schema as $_) {
             $this->mergeKeyTemplate[] = "*";
         }
+
+        $this->isMergeKeyTemplateCreated = true;
     }
 
-    public function getConfig($namespace)
+    public function getConfig($schemaPath)
     {
+        if (!$this->isMergeKeyTemplateCreated) {
+            $this->createMergeKeyTemplate();
+        }
+
         $mergeKey = $this->mergeKeyTemplate;
-        $mergeResult = $this->data[join(".", $mergeKey)];
+        $mergeResult = $this->mergeTree[join(".", $mergeKey)];
         $priority = 1;
         $priorityTree = [];
-        foreach ($namespace as $index => $value) {
-            $key = $this->schema[$index] . '=' . $value;
-            if (isset($this->pathMap[$key])) {
+        foreach ($schemaPath as $index => $value) {
+            $pathKey = $this->schema[$index] . '=' . $value;
+            if (isset($this->pathMap[$pathKey])) {
                 $branchMergeKey = $mergeKey;
                 $branchMergeKey[$index] = $value;
-                $this->attachBranchToPriorityTree($priorityTree, $this->pathMap[$key], $namespace, $index, $branchMergeKey, $priority, $priority);
+                $this->attachBranchToPriorityTree(
+                    $priorityTree,
+                    $this->pathMap[$pathKey],
+                    $schemaPath,
+                    $index,
+                    $branchMergeKey,
+                    $priority,
+                    $priority
+                );
             }
             $priority *= 2;
         }
@@ -46,22 +65,30 @@ class Registry
         return $mergeResult;
     }
 
-    public function attachBranchToPriorityTree(&$result, &$node, $namespace, $index, &$mergeKey, $priority, $pow)
+    public function attachBranchToPriorityTree(&$result, &$pathMapNode, $schemaPath, $index, &$mergeKey, $priority, $pow)
     {
         $joinedKey = join(".", $mergeKey);
-        while (++$index < count($namespace)) {
-            $value = $namespace[$index];
-            $key = $this->schema[$index] . '=' . $value;
+        while (++$index < count($schemaPath)) {
+            $value = $schemaPath[$index];
+            $pathKey = $this->schema[$index] . '=' . $value;
             $pow *= 2;
-            if (isset($node[$key])) {
+            if (isset($pathMapNode[$pathKey])) {
                 $mergeKey[$index] = $value;
-                $this->attachBranchToPriorityTree($result, $node[$key], $namespace, $index, $mergeKey, $priority + $pow, $pow);
+                $this->attachBranchToPriorityTree(
+                    $result,
+                    $pathMapNode[$pathKey],
+                    $schemaPath,
+                    $index,
+                    $mergeKey,
+                    $priority + $pow,
+                    $pow
+                );
                 $mergeKey[$index] = "*";
             }
         }
 
-        if (isset($this->data[$joinedKey])) {
-            $result[$priority] = $this->data[$joinedKey];
+        if (isset($this->mergeTree[$joinedKey])) {
+            $result[$priority] = $this->mergeTree[$joinedKey];
         }
     }
 }
