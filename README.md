@@ -29,11 +29,11 @@ $configData = [
 
 $compiler = new Compiler();
 $compiled = $compiler->compile(["env", "lang", "user"], $configData);
-$registry = new Registry($compiled);
+$selector = new Selector($compiled);
 
-$config = $registry->getConfig(["dev", "ru", "10000"]);
+$config = $selector->getConfig(["dev", "ru", "10000"]);
 var_dump($config["api_host"]);
 
-$config = $registry->getConfig(["prod", "ru", "1024"]);
+$config = $selector->getConfig(["prod", "ru", "1024"]);
 var_dump($config["api_host"]);
 ```
