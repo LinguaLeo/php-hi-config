@@ -1,4 +1,10 @@
 <?php
+/**
+ * This is script readData form source-path and write in output-file
+ * Example
+ * php CreateDataFile.php --source-path "../features" --output-file "cfg.features.php"
+ */
+
 use \LinguaLeo\Config\DataReader;
 use LinguaLeo\Config\DataDumper;
 
