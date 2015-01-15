@@ -1,0 +1,14 @@
+analytics:
+    snowplow: true
+    google: true
+    banners:
+        tedVideos:
+            type: tedVideo
+contentImportMapping:
+    ted-talks:
+        author: 1913810
+        collection: 68503
+contentImportSourceList:
+    - dumpSource
+    - tedTalksSource
+    - tedTalksRssSource
