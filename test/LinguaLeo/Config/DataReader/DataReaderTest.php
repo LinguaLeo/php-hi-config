@@ -4,6 +4,8 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testNamespaceFeatures()
     {
+        echo __DIR__ . '/data/features';
+        exit;
         $defaultPath = [
             'env' => '*',
             'subenv' => '*',
