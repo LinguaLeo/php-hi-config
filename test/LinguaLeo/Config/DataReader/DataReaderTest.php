@@ -1,8 +1,19 @@
 <?php
+use LinguaLeo\Config\DataReader;
 
 class DataReaderTest extends \PHPUnit_Framework_TestCase
 {
-    public function testNamespaceFeatures()
+    /**
+     * @var \LinguaLeo\Config\DataReader
+     */
+    protected  $dataReader;
+
+    public function setUp()
+    {
+        $this->dataReader = $this->createDataReader();
+    }
+
+    public function createDataReader()
     {
         $defaultPath = [
             'env' => '*',
@@ -26,8 +37,23 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
             7 => 'interfaceLang',
             8 => 'country',
         ];
-        $dataReader = new \LinguaLeo\Config\DataReader($schema, $defaultPath);
-        $data = $dataReader->getNamespaceData(__DIR__ . '/data/features');
+        return new \LinguaLeo\Config\DataReader($schema, $defaultPath);
+    }
+
+    public function testNamespaceFeatures()
+    {
+        $data = $this->dataReader->getNamespaceData(__DIR__ . '/data/features');
+        $schema = [
+            0 => 'env',
+            1 => 'subenv',
+            2 => 'protocol',
+            3 => 'host',
+            4 => 'app',
+            5 => 'nativeLang',
+            6 => 'targetLang',
+            7 => 'interfaceLang',
+            8 => 'country',
+        ];
         $this->assertEquals($schema, $data['schema']);
         $mergeTree = [
             'dev.*.*.*.*.tr.*.*.*' => Array
@@ -104,30 +130,7 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testNotExistingDirectory()
     {
-        $defaultPath = [
-            'env' => '*',
-            'subenv' => '*',
-            'protocol' => '*',
-            'host' => '*',
-            'app' => '*',
-            'nativeLang' => '*',
-            'targetLang' => '*',
-            'interfaceLang' => '*',
-            'country' => '*',
-        ];
-        $schema = [
-            0 => 'env',
-            1 => 'subenv',
-            2 => 'protocol',
-            3 => 'host',
-            4 => 'app',
-            5 => 'nativeLang',
-            6 => 'targetLang',
-            7 => 'interfaceLang',
-            8 => 'country',
-        ];
-        $dataReader = new \LinguaLeo\Config\DataReader($schema, $defaultPath);
-        $dataReader->getNamespaceData(__DIR__ . '/data/notExist');
+        $this->dataReader->getNamespaceData(__DIR__ . '/data/notExist');
     }
 
     /**
@@ -135,30 +138,7 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testFilesNotReadable()
     {
-        $defaultPath = [
-            'env' => '*',
-            'subenv' => '*',
-            'protocol' => '*',
-            'host' => '*',
-            'app' => '*',
-            'nativeLang' => '*',
-            'targetLang' => '*',
-            'interfaceLang' => '*',
-            'country' => '*',
-        ];
-        $schema = [
-            0 => 'env',
-            1 => 'subenv',
-            2 => 'protocol',
-            3 => 'host',
-            4 => 'app',
-            5 => 'nativeLang',
-            6 => 'targetLang',
-            7 => 'interfaceLang',
-            8 => 'country',
-        ];
-        $dataReader = new \LinguaLeo\Config\DataReader($schema, $defaultPath);
-        $dataReader->getNamespaceData(__DIR__ . '/data/notAccessed');
+        $this->dataReader->getNamespaceData(__DIR__ . '/data/notAccessed');
     }
 
 }
