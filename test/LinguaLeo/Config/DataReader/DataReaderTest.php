@@ -1,12 +1,10 @@
 <?php
+namespace LinguaLeo\Config\DataReader;
+
 use LinguaLeo\Config\DataReader;
 
 class DataReaderTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var \LinguaLeo\Config\DataReader
-     */
-    protected $dataReader;
 
     public function createDataReader()
     {
@@ -15,11 +13,7 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
             'user' => '*',
             'country' => '*',
         ];
-        $schema = [
-            0 => 'env',
-            1 => 'user',
-            2 => 'country'
-        ];
+        $schema = ['env', 'user', 'country'];
         return new DataReader($schema, $defaultPath);
     }
 
@@ -64,18 +58,16 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testNamespaceFeatures()
+    public function testPathMap()
     {
         $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
         $this->assertEquals(
             [
                 'env=dev' =>
                     [
-                        'user=test' => [
-                        ]
+                        'user=test' => []
                     ],
-                'env=test' => [
-                ]
+                'env=test' => []
             ],
             $data['pathMap']
         );
@@ -96,5 +88,4 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->createDataReader()->getNamespaceData(__DIR__ . '/data/notAccessed');
     }
-
 }
