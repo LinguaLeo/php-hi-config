@@ -1,0 +1,6 @@
+obj2:
+    attr1: true
+    attr2: true
+obj2_1:
+    - attr1
+    - attr2

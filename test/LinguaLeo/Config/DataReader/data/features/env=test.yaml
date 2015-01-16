@@ -1,0 +1,4 @@
+obj3:
+    attr1: text
+    attr2:
+        - elem
