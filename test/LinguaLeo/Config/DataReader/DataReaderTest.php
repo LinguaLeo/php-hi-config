@@ -2,6 +2,7 @@
 namespace LinguaLeo\Config\DataReader;
 
 use LinguaLeo\Config\DataReader;
+use LinguaLeo\Config\Enum;
 
 class DataReaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +21,7 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
     public function testSchema()
     {
         $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
-        $this->assertEquals(['env', 'user', 'country'], $data['schema']);
+        $this->assertEquals(['env', 'user', 'country'], $data[Enum::KEY_SCHEMA]);
     }
 
     public function testTree()
@@ -53,7 +54,7 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
                     ]
                 ]
             ],
-            $data['mergeTree']
+            $data[Enum::KEY_MERGE_TREE]
         );
     }
 
@@ -63,13 +64,12 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
         $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
         $this->assertEquals(
             [
-                'env=dev' =>
-                    [
+                'env=dev' => [
                         'user=test' => []
                     ],
                 'env=test' => []
             ],
-            $data['pathMap']
+            $data[Enum::KEY_PATH_MAP]
         );
     }
 
