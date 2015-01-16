@@ -9,8 +9,6 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
 
     public function createDataReader()
     {
-        echo __DIR__ . '/data/features';
-        exit;
         $defaultPath = [
             'env' => '*',
             'user' => '*',
@@ -73,21 +71,5 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
             ],
             $data[Enum::KEY_PATH_MAP]
         );
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testNotExistingDirectory()
-    {
-        $this->createDataReader()->getNamespaceData(__DIR__ . '/data/notExist');
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testFilesNotReadable()
-    {
-        $this->createDataReader()->getNamespaceData(__DIR__ . '/data/notAccessed');
     }
 }
