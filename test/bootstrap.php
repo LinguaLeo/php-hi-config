@@ -25,3 +25,4 @@
  */
 
 $loader = include __DIR__.'/../vendor/autoload.php';
+$loader->add('LinguaLeo\\Config\\', __DIR__);

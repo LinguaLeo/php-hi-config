@@ -3,10 +3,6 @@ namespace LinguaLeo\Config;
 
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * Class CacheDataReader
- * This class read cache data from folders and return array
- */
 class DataReader
 {
     /**
@@ -57,13 +53,11 @@ class DataReader
             }
         }
 
-        $result = [
+        return [
             Enum::KEY_SCHEMA => $this->schema,
             Enum::KEY_MERGE_TREE => $mergeTree,
             Enum::KEY_PATH_MAP => $pathMap
         ];
-
-        return $result;
     }
 
     /**

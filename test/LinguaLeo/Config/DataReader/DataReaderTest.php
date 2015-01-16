@@ -1,104 +1,78 @@
 <?php
+namespace LinguaLeo\Config\DataReader;
+
+use LinguaLeo\Config\DataReader;
+use LinguaLeo\Config\Enum;
 
 class DataReaderTest extends \PHPUnit_Framework_TestCase
 {
-    public function testNamespaceFeatures()
+
+    public function createDataReader()
     {
         echo __DIR__ . '/data/features';
         exit;
         $defaultPath = [
             'env' => '*',
-            'subenv' => '*',
-            'protocol' => '*',
-            'host' => '*',
-            'app' => '*',
-            'nativeLang' => '*',
-            'targetLang' => '*',
-            'interfaceLang' => '*',
+            'user' => '*',
             'country' => '*',
         ];
-        $schema = [
-            0 => 'env',
-            1 => 'subenv',
-            2 => 'protocol',
-            3 => 'host',
-            4 => 'app',
-            5 => 'nativeLang',
-            6 => 'targetLang',
-            7 => 'interfaceLang',
-            8 => 'country',
-        ];
-        $dataReader = new \LinguaLeo\Config\DataReader($schema, $defaultPath);
-        $data = $dataReader->getNamespaceData(__DIR__ . '/data/features');
-        $this->assertEquals($schema, $data['schema']);
-        $mergeTree = [
-            'dev.*.*.*.*.tr.*.*.*' => Array
-            (
-                'lexicGlossaryLevels' => Array
-                (
-                    70 => 0,
-                    71 => 985,
-                    72 => 1971,
-                    73 => 2957,
-                    74 => 3942,
-                    75 => 4928,
-                    76 => 5914
-                )
-            ),
-            'dev.*.*.*.*.*.*.*.*' => Array
-            (
-                'analytics' => Array
-                (
-                    'snowplow' => 1,
-                    'google' => 1,
-                    'banners' => Array
-                    (
-                        'tedVideos' => Array
-                        (
-                            'type' => 'tedVideo'
-                        )
-                    )
-                ),
-                'contentImportMapping' => Array
-                (
-                    'ted-talks' => Array
-                    (
-                        'author' => 1913810,
-                        'collection' => 68503
-                    )
-                ),
-                'contentImportSourceList' => Array
-                (
-                    0 => 'dumpSource',
-                    1 => 'tedTalksSource',
-                    2 => 'tedTalksRssSource'
-                )
-            ),
-            'test.*.*.*.*.*.*.*.*' => Array
-            (
-                'userSearchEngineConfig' => Array
-                (
-                    'search_engine_name' => 'Sphinx',
-                    'index_engines' => Array
-                    (
-                        0 => 'Sphinx'
-                    )
+        $schema = ['env', 'user', 'country'];
+        return new DataReader($schema, $defaultPath);
+    }
 
-                )
-            )
-        ];
-        $this->assertEquals($mergeTree, $data['mergeTree']);
-        $pathMap = Array
-        (
-            'env=dev' => Array
-            (
-                'nativeLang=tr' => Array
-                ()
-            ),
-            'env=test' => Array
-            ()
+    public function testSchema()
+    {
+        $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
+        $this->assertEquals(['env', 'user', 'country'], $data[Enum::KEY_SCHEMA]);
+    }
+
+    public function testTree()
+    {
+        $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
+        $this->assertEquals(
+            [
+                'dev.test.*' => [
+                    'obj1' => [
+                        'attr1' => 1,
+                        'attr2' => 2
+                    ]
+                ],
+                'dev.*.*' => [
+                    'obj2' => [
+                        'attr1' => true,
+                        'attr2' => true
+                    ],
+                    'obj2_1' => [
+                        'attr1',
+                        'attr2'
+                    ]
+                ],
+                'test.*.*' => [
+                    'obj3' => [
+                        'attr1' => 'text',
+                        'attr2' => [
+                            'elem'
+                        ]
+                    ]
+                ]
+            ],
+            $data[Enum::KEY_MERGE_TREE]
         );
-        $this->assertEquals($pathMap, $data['pathMap']);
+    }
+
+
+    public function testPathMap()
+    {
+        $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
+        $this->assertEquals(
+            [
+                'env=dev' => [
+                        'user=test' => []
+                    ],
+                'env=test' => []
+            ],
+            $data[Enum::KEY_PATH_MAP]
+        );
     }
 
     /**
@@ -106,30 +80,7 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testNotExistingDirectory()
     {
-        $defaultPath = [
-            'env' => '*',
-            'subenv' => '*',
-            'protocol' => '*',
-            'host' => '*',
-            'app' => '*',
-            'nativeLang' => '*',
-            'targetLang' => '*',
-            'interfaceLang' => '*',
-            'country' => '*',
-        ];
-        $schema = [
-            0 => 'env',
-            1 => 'subenv',
-            2 => 'protocol',
-            3 => 'host',
-            4 => 'app',
-            5 => 'nativeLang',
-            6 => 'targetLang',
-            7 => 'interfaceLang',
-            8 => 'country',
-        ];
-        $dataReader = new \LinguaLeo\Config\DataReader($schema, $defaultPath);
-        $dataReader->getNamespaceData(__DIR__ . '/data/notExist');
+        $this->createDataReader()->getNamespaceData(__DIR__ . '/data/notExist');
     }
 
     /**
@@ -137,30 +88,6 @@ class DataReaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testFilesNotReadable()
     {
-        $defaultPath = [
-            'env' => '*',
-            'subenv' => '*',
-            'protocol' => '*',
-            'host' => '*',
-            'app' => '*',
-            'nativeLang' => '*',
-            'targetLang' => '*',
-            'interfaceLang' => '*',
-            'country' => '*',
-        ];
-        $schema = [
-            0 => 'env',
-            1 => 'subenv',
-            2 => 'protocol',
-            3 => 'host',
-            4 => 'app',
-            5 => 'nativeLang',
-            6 => 'targetLang',
-            7 => 'interfaceLang',
-            8 => 'country',
-        ];
-        $dataReader = new \LinguaLeo\Config\DataReader($schema, $defaultPath);
-        $dataReader->getNamespaceData(__DIR__ . '/data/notAccessed');
+        $this->createDataReader()->getNamespaceData(__DIR__ . '/data/notAccessed');
     }
-
 }

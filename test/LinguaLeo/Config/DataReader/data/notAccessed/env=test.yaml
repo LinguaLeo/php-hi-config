@@ -1,4 +1,1 @@
-rchEngineConfig:
-    search_engine_name: Sphinx
-    index_engines:
-        - Sphinx
+
