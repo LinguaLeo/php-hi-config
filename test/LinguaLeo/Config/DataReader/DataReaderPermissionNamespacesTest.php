@@ -3,7 +3,7 @@ namespace LinguaLeo\Config\DataReader;
 
 use LinguaLeo\Config\DataReader;
 
-class DataReaderPermissionTest extends \PHPUnit_Framework_TestCase
+class DataReaderPermissionNamespacesTest extends \PHPUnit_Framework_TestCase
 {
     public function createDataReader()
     {
@@ -16,30 +16,28 @@ class DataReaderPermissionTest extends \PHPUnit_Framework_TestCase
         return new DataReader($schema, $defaultPath);
     }
 
-    private function getFileName()
+    private function getFolderName()
     {
-        return __DIR__ . '/data/features/cantRead.yaml';
+        return __DIR__ . '/data/cantRead';
     }
 
 
     protected function setUp()
     {
-        $file = fopen($this->getFileName($this->getFileName()), 'w');
-        fclose($file);
-        chmod($this->getFileName(), 0200);
+        mkdir($this->getFolderName(), 0200);
     }
 
     protected function tearDown()
     {
-        unlink($this->getFileName());
+        rmdir($this->getFolderName());
     }
 
     /**
      * @expectedException \RuntimeException
      */
-    public function testFilesNotReadable()
+    public function testNamespacesFolderNotReadable()
     {
-        $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
+       $this->createDataReader()->getNamespacesData($this->getFolderName());
     }
 
 

@@ -1,8 +1,8 @@
 <?php
 /**
- * This is script readData form source-path and write in output-file
+ * This is script readData form source-path(path of namespaces) and write in output-file
  * Example
- * php CreateDataFile.php --source-path "../features" --output-file "cfg.features.php"
+ * php CreateNamespacesFile.php --source-path "../namespaces" --output-file "namespaces.php"
  */
 
 use \LinguaLeo\Config\DataReader;
@@ -24,19 +24,9 @@ $defaultPath = [
     'interfaceLang' => '*',
     'country' => '*',
 ];
-$schema = [
-    0 => 'env',
-    1 => 'subenv',
-    2 => 'protocol',
-    3 => 'host',
-    4 => 'app',
-    5 => 'nativeLang',
-    6 => 'targetLang',
-    7 => 'interfaceLang',
-    8 => 'country',
-];
+$schema = ['env', 'subenv', 'protocol', 'host', 'app', 'nativeLang', 'targetLang', 'interfaceLang', 'country'];
 $dataReader = new DataReader($schema, $defaultPath);
-$data = $dataReader->getNamespaceData($sourcePath);
+$data = $dataReader->getNamespacesData($sourcePath);
 DataDumper::dumpData($outputFile, $data);
 ?>
 

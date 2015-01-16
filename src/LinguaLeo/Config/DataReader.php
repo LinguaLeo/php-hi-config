@@ -61,6 +61,31 @@ class DataReader
     }
 
     /**
+     * @param $namespaceDirectory
+     */
+    public function getNamespacesData($namespacesDirectory)
+    {
+        if (!is_dir($namespacesDirectory)) {
+            throw new \InvalidArgumentException(
+                sprintf('directory namespaces "%s" doesn`t exist"', $namespacesDirectory)
+            );
+        }
+
+        $directoryIterator = new \DirectoryIterator($namespacesDirectory);
+        $namespacesData = [];
+        foreach ($directoryIterator as $folderInfo) {
+            if ($folderInfo->isDot()) {
+                continue;
+            }
+            if ($folderInfo->isDir()) {
+                $namespace = $folderInfo->getFilename();
+                $namespacesData[$namespace] = $this->getNamespaceData($folderInfo->getPathname());
+            }
+        }
+        return $namespacesData;
+    }
+
+    /**
      * @param \SplFileInfo $fileInfo
      * @return array
      */
