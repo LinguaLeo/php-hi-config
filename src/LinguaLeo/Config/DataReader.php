@@ -67,17 +67,14 @@ class DataReader
     {
         if (!is_dir($namespacesDirectory)) {
             throw new \InvalidArgumentException(
-                sprintf('directory namespaces "%s" doesn`t exist"', $namespacesDirectory)
+                sprintf('The directory of namespaces "%s" doesn`t exist"', $namespacesDirectory)
             );
         }
 
         $directoryIterator = new \DirectoryIterator($namespacesDirectory);
         $namespacesData = [];
         foreach ($directoryIterator as $folderInfo) {
-            if ($folderInfo->isDot()) {
-                continue;
-            }
-            if ($folderInfo->isDir()) {
+            if ($folderInfo->isDir() && !$folderInfo->isDot()) {
                 $namespace = $folderInfo->getFilename();
                 $namespacesData[$namespace] = $this->getNamespaceData($folderInfo->getPathname());
             }

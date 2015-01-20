@@ -14,9 +14,11 @@ class DataDumper
     {
         $dir = dirname($outputFile);
         if (!file_exists($dir)) {
-            throw new \InvalidArgumentException(
-                sprintf('dir "%s" of output file "%s"  doesn`t exist"', $dir, $outputFile)
-            );
+            if (!mkdir($dir, 0755, true)) {
+                throw new \InvalidArgumentException(
+                    sprintf('Can\'t create $dir "%s" of output file "%s"', $dir, $outputFile)
+                );
+            }
         }
         $tmpName = tempnam($dir, basename($outputFile));
         if (false !== file_put_contents($tmpName, '<?php return ' . var_export($data, 1) . ';')) {

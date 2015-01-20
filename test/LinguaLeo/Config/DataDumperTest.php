@@ -3,17 +3,15 @@
 
 namespace LinguaLeo\Config;
 
-use LinguaLeo\Config;
-
 
 class DataDumperTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testNotExistingFile()
+    public function testNotExistingFolder()
     {
-        DataDumper::dumpData(__DIR__ . '/notExistFolder/output.php', []);
+        $res = DataDumper::dumpData(__DIR__ . '/notExistFolder/output.php', []);
+        unlink(__DIR__ . '/notExistFolder/output.php');
+        rmdir(__DIR__ . '/notExistFolder');
+        $this->assertTrue($res);
     }
 
     public function testResultOperation()

@@ -1,9 +1,8 @@
 <?php
 namespace LinguaLeo\Config\DataReader;
 
-use LinguaLeo\Config\DataReader;
 use LinguaLeo\Config\Enum;
-
+use LinguaLeo\Config\DataReader;
 class DataReaderTest extends \PHPUnit_Framework_TestCase
 {
 

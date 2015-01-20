@@ -8,6 +8,11 @@
 use \LinguaLeo\Config\DataReader;
 use LinguaLeo\Config\DataDumper;
 
+use Symfony\Component\Console\Application;
+
+$app = new Application();
+$app->run();
+
 include __DIR__ . '/../vendor/autoload.php';
 
 $options = getopt('', ['source-path:', 'output-file:']);
