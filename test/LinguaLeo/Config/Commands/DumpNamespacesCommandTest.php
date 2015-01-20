@@ -6,7 +6,7 @@ use Symfony\Component\Console\Application;
 
 class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
 {
-    public function testExecute()
+    public function testExecuteFileData()
     {
         $application = new Application();
         $application->add(new DumpNamespacesCommand());
@@ -17,7 +17,8 @@ class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(
             array(
                 '--source-path'    => __DIR__ . '/../DataReader/data/namespaces',
-                '--output-file'  => $outputFile
+                '--output-file'  => $outputFile,
+                '--schema' => 'env,lang,user'
             )
         );
 
@@ -26,10 +27,9 @@ class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
              [
                  'namespace1' => [
-                     'schema' => ['env', 'subenv', 'protocol', 'host', 'app','nativeLang', 'targetLang',
-                         'interfaceLang','country'],
+                     'schema' => ['env', 'lang', 'user'],
                      'mergeTree' => [
-                         'dev.*.*.*.*.*.*.*.*' => [
+                         'dev.*.*' => [
                              'obj' => [
                                  'attr1' => 'namespace1',
                                  'attr2' => 'test1'
@@ -41,10 +41,9 @@ class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
                      ]
                  ],
                  'namespace2' => [
-                     'schema' => ['env', 'subenv', 'protocol', 'host', 'app','nativeLang', 'targetLang',
-                         'interfaceLang','country'],
+                     'schema' => ['env', 'lang', 'user'],
                      'mergeTree' => [
-                         'test.*.*.*.*.*.*.*.*' => [
+                         'test.*.*' => [
                              'obj' => [
                                  'attr1' => 'namespace2',
                                  'attr2' => 'test2'
@@ -58,5 +57,23 @@ class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
              ],
              $data
          );
+    }
+    public function testExecuteOutputStratus()
+    {
+        $application = new Application();
+        $application->add(new DumpNamespacesCommand());
+
+        $command = $application->find('cfg:dump-namespaces');
+        $commandTester = new CommandTester($command);
+        $outputFile =  __DIR__ .'/../DataReader/data/output.php';
+        $commandTester->execute(
+            array(
+                '--source-path'    => __DIR__ . '/../DataReader/data/namespaces',
+                '--output-file'  => $outputFile,
+                '--schema' => 'env,lang,user'
+            )
+        );
+        unlink($outputFile);
+        $this->assertEquals('Dump SUCCESS'."\n", $commandTester->getDisplay());
     }
 }

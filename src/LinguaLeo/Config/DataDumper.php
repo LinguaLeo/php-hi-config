@@ -1,13 +1,10 @@
 <?php
-
-
 namespace LinguaLeo\Config;
-
 
 class DataDumper
 {
     /**
-     * @param $outputFile
+     * @param string $outputFile
      * @param array $data
      */
     public static function dumpData($outputFile, array $data)

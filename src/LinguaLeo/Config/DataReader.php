@@ -61,7 +61,7 @@ class DataReader
     }
 
     /**
-     * @param $namespaceDirectory
+     * @param string $namespacesDirectory
      */
     public function getNamespacesData($namespacesDirectory)
     {
