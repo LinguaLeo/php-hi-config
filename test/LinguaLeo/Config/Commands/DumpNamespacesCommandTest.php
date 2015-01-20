@@ -18,7 +18,7 @@ class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
             array(
                 '--source-path'    => __DIR__ . '/../DataReader/data/namespaces',
                 '--output-file'  => $outputFile,
-                '--schema' => ['env','lang', 'user']
+                '--schema' => 'env,lang,user'
             )
         );
 
@@ -70,7 +70,7 @@ class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
             array(
                 '--source-path'    => __DIR__ . '/../DataReader/data/namespaces',
                 '--output-file'  => $outputFile,
-                '--schema' => ['env','lang', 'user']
+                '--schema' => 'env,lang,user'
             )
         );
         unlink($outputFile);
