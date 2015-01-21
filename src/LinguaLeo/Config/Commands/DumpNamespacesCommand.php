@@ -39,10 +39,10 @@ class DumpNamespacesCommand extends Command
         $dataReader = new DataReader($schema, $defaultPath);
         $data = $dataReader->getNamespacesData($sourcePath);
         if (DataDumper::dumpData($outputFile, $data) === true) {
-            return $output->writeln('Dump SUCCESS');
+            $output->writeln('Dump SUCCESS');
+            return 0;
         }
-
         $output->writeln('Dump FAILED');
+        return 1;
     }
-
 }

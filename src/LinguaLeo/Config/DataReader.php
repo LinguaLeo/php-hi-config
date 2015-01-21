@@ -74,7 +74,7 @@ class DataReader
         $directoryIterator = new \DirectoryIterator($namespacesDirectory);
         $namespacesData = [];
         foreach ($directoryIterator as $folderInfo) {
-            if ($folderInfo->isDir() && !$folderInfo->isDot()) {
+            if ($folderInfo->isDir() && !$folderInfo->isDot() && ($folderInfo->getFilename() !== '.git')) {
                 $namespace = $folderInfo->getFilename();
                 $namespacesData[$namespace] = $this->getNamespaceData($folderInfo->getPathname());
             }
