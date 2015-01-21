@@ -21,7 +21,7 @@ class DumpNamespacesCommand extends Command
             ->setDescription('Dump Namespaces')
             ->addOption('source-path', null, InputOption::VALUE_REQUIRED, 'The folder that stores folders of namespaces')
             ->addOption('output-file', null, InputOption::VALUE_REQUIRED, 'In this file will be saved cache of namespaces')
-            ->addOption('schema', null, InputOption::VALUE_REQUIRED, 'Schema elemenets, delimeter ","');
+            ->addOption('schema', null, InputOption::VALUE_REQUIRED, 'Schema elements, delimiter ","');
     }
 
     /**
