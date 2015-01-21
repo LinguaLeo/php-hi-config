@@ -41,7 +41,7 @@ class DataReader
         $directoryIterator = new \DirectoryIterator($namespaceDirectory);
         foreach ($directoryIterator as $file) {
             $fileInfo = $file->getFileInfo();
-            if ($fileInfo->isFile()) {
+            if ($fileInfo->isFile() && (substr($fileInfo->getFilename(),0,1) !== '.')) {
                 if (!$fileInfo->isReadable()) {
                     throw new \RuntimeException(sprintf('file "%s" isn`t readable', $fileInfo->getPathname()));
                 }
@@ -74,7 +74,7 @@ class DataReader
         $directoryIterator = new \DirectoryIterator($namespacesDirectory);
         $namespacesData = [];
         foreach ($directoryIterator as $folderInfo) {
-            if ($folderInfo->isDir() && !$folderInfo->isDot() && ($folderInfo->getFilename() !== '.git')) {
+            if ($folderInfo->isDir() && !$folderInfo->isDot() && (substr($folderInfo->getFilename(),0,1) !== '.')) {
                 $namespace = $folderInfo->getFilename();
                 $namespacesData[$namespace] = $this->getNamespaceData($folderInfo->getPathname());
             }
