@@ -19,9 +19,24 @@ class DumpNamespacesCommand extends Command
         $this
             ->setName('cfg:dump-namespaces')
             ->setDescription('Dump Namespaces')
-            ->addOption('source-path', null, InputOption::VALUE_REQUIRED, 'The folder that stores folders of namespaces')
-            ->addOption('output-file', null, InputOption::VALUE_REQUIRED, 'In this file will be saved cache of namespaces')
-            ->addOption('schema', null, InputOption::VALUE_REQUIRED, 'Schema elements, delimiter ","');
+            ->addOption(
+                'source-path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The folder that stores folders of namespaces'
+            )
+            ->addOption(
+                'output-file',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'In this file will be saved cache of namespaces'
+            )
+            ->addOption(
+                'schema',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Schema elements, delimiter ","'
+            );
     }
 
     /**

@@ -66,8 +66,15 @@ class Selector
         $this->isMergeKeyTemplateCreated = true;
     }
 
-    public function attachBranchToPriorityTree(&$result, &$pathMapNode, $schemaPath, $index, &$mergeKey, $priority, $pow)
-    {
+    public function attachBranchToPriorityTree(
+        &$result,
+        &$pathMapNode,
+        $schemaPath,
+        $index,
+        &$mergeKey,
+        $priority,
+        $pow
+    ) {
         $joinedKey = join(".", $mergeKey);
         while (++$index < count($schemaPath)) {
             $value = $schemaPath[$index];
