@@ -6,8 +6,10 @@ class DataDumper
     /**
      * @param string $outputFile
      * @param array $data
+     * @param int $mode
+     * @return bool
      */
-    public static function dumpData($outputFile, array $data)
+    public static function dumpData($outputFile, array $data, $mode = 0644)
     {
         $dir = dirname($outputFile);
         if (!file_exists($dir)) {
@@ -19,8 +21,9 @@ class DataDumper
         }
         $tmpName = tempnam($dir, basename($outputFile));
         if (false !== file_put_contents($tmpName, '<?php return ' . var_export($data, 1) . ';')) {
-            return @rename($tmpName, $outputFile);
+            if (@rename($tmpName, $outputFile) && @chmod($outputFile, $mode))
+                return true;
         }
-        return null;
+        return false;
     }
 }
