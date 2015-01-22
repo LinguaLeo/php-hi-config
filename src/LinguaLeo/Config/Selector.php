@@ -8,7 +8,7 @@ class Selector
     protected $pathMap;
 
     protected $mergeKeyTemplate;
-    protected $isMergeKeyTemplateCreated = false;
+    protected $isMergeKeyTplCreated = false;
 
     /**
      * @param Data $compiledData
@@ -22,7 +22,7 @@ class Selector
 
     public function getConfig($selectPath)
     {
-        if (!$this->isMergeKeyTemplateCreated) {
+        if (!$this->isMergeKeyTplCreated) {
             $this->createMergeKeyTemplate();
         }
 
@@ -63,7 +63,7 @@ class Selector
             $this->mergeKeyTemplate[] = Enum::BLANK;
         }
 
-        $this->isMergeKeyTemplateCreated = true;
+        $this->isMergeKeyTplCreated = true;
     }
 
     public function attachBranchToPriorityTree(
