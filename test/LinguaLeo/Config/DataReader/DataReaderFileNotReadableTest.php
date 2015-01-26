@@ -3,18 +3,8 @@ namespace LinguaLeo\Config\DataReader;
 
 use LinguaLeo\Config\DataReader;
 
-class DataReaderFileNotReadableTest extends \PHPUnit_Framework_TestCase
+class DataReaderFileNotReadableTest extends BaseDataReaderTest
 {
-    public function createDataReader()
-    {
-        $defaultPath = [
-            'env' => '*',
-            'user' => '*',
-            'country' => '*',
-        ];
-        $schema = ['env', 'user', 'country'];
-        return new DataReader($schema, $defaultPath);
-    }
 
     private function getFileName()
     {

@@ -3,20 +3,9 @@ namespace LinguaLeo\Config\DataReader;
 
 use LinguaLeo\Config\Enum;
 use LinguaLeo\Config\DataReader;
-class DataReaderTest extends \PHPUnit_Framework_TestCase
+
+class DataReaderTest extends BaseDataReaderTest
 {
-
-    public function createDataReader()
-    {
-        $defaultPath = [
-            'env' => '*',
-            'user' => '*',
-            'country' => '*',
-        ];
-        $schema = ['env', 'user', 'country'];
-        return new DataReader($schema, $defaultPath);
-    }
-
     public function testSchema()
     {
         $data = $this->createDataReader()->getNamespaceData(__DIR__ . '/data/features');
