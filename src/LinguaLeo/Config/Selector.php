@@ -59,7 +59,7 @@ class Selector
 
     protected function createMergeKeyTemplate()
     {
-        array_fill(0, count($this->schema), Enum::BLANK);
+        $this->mergeKeyTemplate = array_fill(0, count($this->schema), Enum::BLANK);
         $this->isMergeKeyTplCreated = true;
     }
 
