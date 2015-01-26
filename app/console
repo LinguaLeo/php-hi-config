@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+include __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use LinguaLeo\Config\Commands\DumpNamespacesCommand;
+
+$app = new Application();
+$app->add(new DumpNamespacesCommand());
+$app->run();

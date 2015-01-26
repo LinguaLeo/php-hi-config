@@ -47,7 +47,11 @@ class Data
         return $this->schema;
     }
 
-    static public function fromArray($array)
+    /**
+     * @param array $array
+     * @return Data
+     */
+    public static function fromArray($array)
     {
         return new self($array[Enum::KEY_SCHEMA], $array[Enum::KEY_MERGE_TREE], $array[Enum::KEY_PATH_MAP]);
     }

@@ -8,7 +8,7 @@ class Selector
     protected $pathMap;
 
     protected $mergeKeyTemplate;
-    protected $isMergeKeyTemplateCreated = false;
+    protected $isMergeKeyTplCreated = false;
 
     /**
      * @param Data $compiledData
@@ -22,7 +22,7 @@ class Selector
 
     public function getConfig($selectPath)
     {
-        if (!$this->isMergeKeyTemplateCreated) {
+        if (!$this->isMergeKeyTplCreated) {
             $this->createMergeKeyTemplate();
         }
 
@@ -59,15 +59,19 @@ class Selector
 
     protected function createMergeKeyTemplate()
     {
-        foreach ($this->schema as $_) {
-            $this->mergeKeyTemplate[] = Enum::BLANK;
-        }
-
-        $this->isMergeKeyTemplateCreated = true;
+        $this->mergeKeyTemplate = array_fill(0, count($this->schema), Enum::BLANK);
+        $this->isMergeKeyTplCreated = true;
     }
 
-    public function attachBranchToPriorityTree(&$result, &$pathMapNode, $schemaPath, $index, &$mergeKey, $priority, $pow)
-    {
+    public function attachBranchToPriorityTree(
+        &$result,
+        &$pathMapNode,
+        $schemaPath,
+        $index,
+        &$mergeKey,
+        $priority,
+        $pow
+    ) {
         $joinedKey = join(".", $mergeKey);
         while (++$index < count($schemaPath)) {
             $value = $schemaPath[$index];
