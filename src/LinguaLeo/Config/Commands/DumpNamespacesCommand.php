@@ -12,6 +12,19 @@ use LinguaLeo\Config\DataDumper;
 class DumpNamespacesCommand extends Command
 {
     /**
+     * @param array $schema
+     * @return array
+     */
+    private function getDefaultPath(array $schema)
+    {
+        $path = [];
+        foreach ($schema as $name) {
+            $path[$name] = '*';
+        }
+        return $path;
+    }
+
+    /**
      * @inheritdoc
      */
     protected function configure()
@@ -47,13 +60,10 @@ class DumpNamespacesCommand extends Command
         $sourcePath = $input->getOption('source-path');
         $outputFile = $input->getOption('output-file');
         $schema = explode(',', $input->getOption('schema'));
-        $defaultPath = [];
-        foreach ($schema as $name) {
-            $defaultPath[$name] = '*';
-        }
+        $defaultPath = $this->getDefaultPath($schema);
         $dataReader = new DataReader($schema, $defaultPath);
         $data = $dataReader->getNamespacesData($sourcePath);
-        if (DataDumper::dumpData($outputFile, $data) === true) {
+        if (DataDumper::dumpData($outputFile, $data)) {
             $output->writeln('Dump SUCCESS');
             return 0;
         }

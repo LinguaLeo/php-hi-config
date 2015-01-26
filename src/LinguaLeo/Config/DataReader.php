@@ -2,6 +2,8 @@
 namespace LinguaLeo\Config;
 
 use Symfony\Component\Yaml\Yaml;
+use DirectoryIterator;
+use SplFileInfo;
 
 class DataReader
 {
@@ -14,6 +16,25 @@ class DataReader
      * @var array
      */
     private $defaultPath;
+
+    /**
+     * @param DirectoryIterator $folderInfo
+     * @return bool
+     */
+    private function isNamespaceDir(DirectoryIterator $folderInfo)
+    {
+        return $folderInfo->isDir() && !$folderInfo->isDot() && ($folderInfo->getFilename()[0] !== '.');
+    }
+
+    /**
+     * @param SplFileInfo $fileInfo
+     * @return bool
+     */
+    private function isNamespaceFile(SplFileInfo $fileInfo)
+    {
+        return $fileInfo->isFile() && ($fileInfo->getFilename()[0] !== '.');
+    }
+
 
     /**
      * @param array $schema
@@ -41,7 +62,7 @@ class DataReader
         $directoryIterator = new \DirectoryIterator($namespaceDirectory);
         foreach ($directoryIterator as $file) {
             $fileInfo = $file->getFileInfo();
-            if ($fileInfo->isFile() && (substr($fileInfo->getFilename(), 0, 1) !== '.')) {
+            if ($this->isNamespaceFile($fileInfo)) {
                 if (!$fileInfo->isReadable()) {
                     throw new \RuntimeException(sprintf('file "%s" isn`t readable', $fileInfo->getPathname()));
                 }
@@ -71,16 +92,18 @@ class DataReader
             );
         }
 
-        $directoryIterator = new \DirectoryIterator($namespacesDirectory);
+        $directoryIterator = new DirectoryIterator($namespacesDirectory);
         $namespacesData = [];
         foreach ($directoryIterator as $folderInfo) {
-            if ($folderInfo->isDir() && !$folderInfo->isDot() && (substr($folderInfo->getFilename(), 0, 1) !== '.')) {
+            if ($this->isNamespaceDir($folderInfo)) {
                 $namespace = $folderInfo->getFilename();
                 $namespacesData[$namespace] = $this->getNamespaceData($folderInfo->getPathname());
             }
         }
         return $namespacesData;
     }
+
+
 
     /**
      * @param \SplFileInfo $fileInfo
