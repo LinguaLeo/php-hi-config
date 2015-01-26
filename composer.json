@@ -1,12 +1,11 @@
 {
-    "version": "1.2.0",
     "name": "lingualeo/php-hi-config",
     "minimum-stability": "stable",
     "description": "Library to create awesome hierarchical configs",
 
     "require": {
         "php": "5.5.*",
-        "symfony/yaml": ">v2.6",
+        "symfony/yaml": ">=v2.6",
         "symfony/console": ">=v2.6"
     },
 
