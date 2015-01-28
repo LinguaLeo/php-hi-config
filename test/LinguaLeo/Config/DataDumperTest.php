@@ -25,7 +25,7 @@ class DataDumperTest extends \PHPUnit_Framework_TestCase
     {
         $filePath = __DIR__ . '/DataReader/data/test.php';
         DataDumper::dumpData($filePath, ['test' => 'value']);
-        $data = include $filePath;
+        $data = json_decode(file_get_contents($filePath), true);
         unlink($filePath);
         $this->assertEquals($data, ['test' => 'value']);
     }

@@ -22,7 +22,8 @@ class DumpNamespacesCommandTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $data = include $outputFile;
+        $data = json_decode(file_get_contents($outputFile), true);
+
         unlink($outputFile);
         $this->assertEquals(
              [
