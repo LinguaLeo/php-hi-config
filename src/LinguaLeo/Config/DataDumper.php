@@ -20,7 +20,7 @@ class DataDumper
             }
         }
         $tmpName = tempnam($dir, basename($outputFile));
-        if (false !== file_put_contents($tmpName, '<?php return ' . var_export($data, 1) . ';')) {
+        if (false !== file_put_contents($tmpName, json_encode($data))) {
              return @rename($tmpName, $outputFile) && @chmod($outputFile, $mode);
         }
         return false;
