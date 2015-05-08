@@ -4,7 +4,7 @@
     "description": "Library to create awesome hierarchical configs",
 
     "require": {
-        "php": "5.5.*",
+        "php": "~5.5",
         "symfony/yaml": ">=v2.6",
         "symfony/console": ">=v2.6"
     },
@@ -15,7 +15,7 @@
 
     "autoload": {
         "psr-0": {
-            "LinguaLeo": ["src/", "test/"]
+            "LinguaLeo\\Config\\": ["src/", "test/"]
         }
     }
 }
