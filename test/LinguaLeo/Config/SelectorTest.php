@@ -64,4 +64,34 @@ class SelectorTest extends \PHPUnit_Framework_TestCase
         $config = $selector->getConfig(["dev", "ru", "1024"]);
         $this->assertEquals("**1024", $config["value"]);
     }
+
+    public function testPrioritiesNotFullSelectPath()
+    {
+        $compiledData = new Data(
+            ["env", "lang", "user"],
+            [
+                "*.*.*" => ["value" => "default"],
+                "prod.*.1024" => ["value" => "prod*1024"],
+                "prod.*.*" => ["value" => "prod**"],
+                "*.*.1024" => ["value" => "**1024"],
+                "*.ru.1024" => ["value" => "*ru1024"],
+                "*.ru.*" => ["value" => "*ru*"],
+            ],
+            [
+                "env=prod" => ["user=1024" => []],
+                "user=1024" => [],
+                "lang=ru" => ["user=1024" => []]
+            ]
+        );
+        $selector = new Selector($compiledData);
+
+        $config = $selector->getConfig(["prod"]);
+        $this->assertEquals("prod**", $config["value"]);
+
+        $config = $selector->getConfig(["prod", "ru"]);
+        $this->assertEquals("*ru*", $config["value"]);
+
+        $config = $selector->getConfig(["prod", "en"]);
+        $this->assertEquals("prod**", $config["value"]);
+    }
 }
